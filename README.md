@@ -8,9 +8,11 @@ Hotel Mario (USA) running as a native CD-i player build on the sibling
 Early preview: the real CD-RTOS BIOS boots, the player shell opens the disc,
 the Philips Interactive Media bumper plays with decoded XA audio, and Hotel
 Mario reaches and runs its attract sequence. The Fantasy Factory title card is
-pixel-exact against the regression capture, later animated scenes advance, and
-the verified path has zero native dispatch misses and zero dropped audio
-frames. Gameplay and a full playthrough are not yet certified.
+pixel-exact against the regression capture, the Mushroom Kingdom background
+renders correctly, and the verified path has zero native dispatch misses and
+zero dropped audio frames. Background changes after that initial scene and the
+post-intro transition are not yet reliable. Gameplay and a full playthrough
+are not yet certified.
 
 This repository contains only game-specific build glue, identity metadata, and
 acceptance tooling. It does **not** contain a CD-i BIOS, Hotel Mario disc data,
@@ -70,9 +72,10 @@ With your own BIOS and disc image:
 ```
 
 The gate enters through the real player-shell input path and requires the
-pixel-exact title, a populated background plane in the later intro, clean
-bumper and intro XA audio with zero drops, expected disc progress, zero native
-dispatch misses, and real-time field pacing.
+pixel-exact title, a populated background plane in the intro, clean bumper and
+intro XA audio with zero drops, expected disc progress, zero native dispatch
+misses, and real-time field pacing. It does not yet certify subsequent
+background changes or the post-intro transition.
 
 `HotelMarioRecomp.exe` itself also enforces the asset contract: a BIOS-only
 launch is rejected, and `--disc` is mandatory for this game-specific build.
