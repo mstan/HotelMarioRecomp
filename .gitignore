@@ -1,0 +1,33 @@
+/build/
+/build-*/
+/release-stage/
+*.zip
+
+# User-provided copyrighted assets.
+*.rom
+*.bin
+*.cue
+*.iso
+*.chd
+/bios/
+/disc/
+
+# Persistent local asset selections and player state.
+/bios.cfg
+/disc.cfg
+/player.cfg
+/nvram.bin
+
+# Shared engine checkout/junctions are external, never vendored here.
+/cdirecomp/
+
+# Diagnostics and editor noise.
+/*.ppm
+/*.png
+/*.bmp
+/*.log
+__pycache__/
+.vs/
+.vscode/
+*.user
+
