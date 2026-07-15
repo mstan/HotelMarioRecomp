@@ -1,11 +1,9 @@
 # Known limits
 
 - The verified boundary is BIOS boot through the later Hotel Mario attract
-  intro (LBA 4650+), with both video planes and XA audio regression-gated.
-- The first full Mushroom Kingdom background renders, but later background
-  changes have not yet been observed in the live player and the sequence can
-  stall after the intro. The current acceptance gate does not detect either
-  failure yet.
+  intro (LBA 4650+), with both video planes and XA audio regression-gated. An
+  extended run also advances through the record boundary that previously
+  froze the background and stalled the sequence.
 - Loaded game modules currently use cdirecomp's clean-room interpreter
   fallback. Static native module promotion is the next performance/maturation
   step; the accepted build already sustains real-time field pacing.

@@ -10,9 +10,9 @@ the Philips Interactive Media bumper plays with decoded XA audio, and Hotel
 Mario reaches and runs its attract sequence. The Fantasy Factory title card is
 pixel-exact against the regression capture, the Mushroom Kingdom background
 renders correctly, and the verified path has zero native dispatch misses and
-zero dropped audio frames. Background changes after that initial scene and the
-post-intro transition are not yet reliable. Gameplay and a full playthrough
-are not yet certified.
+zero dropped audio frames. Later background animation and the transition out of
+the intro now progress without the former CIAP completion stall. Gameplay and
+a full playthrough are not yet certified.
 
 This repository contains only game-specific build glue, identity metadata, and
 acceptance tooling. It does **not** contain a CD-i BIOS, Hotel Mario disc data,
@@ -75,7 +75,9 @@ The gate enters through the real player-shell input path and requires the
 pixel-exact title, a populated background plane in the intro, clean bumper and
 intro XA audio with zero drops, expected disc progress, zero native dispatch
 misses, and real-time field pacing. It does not yet certify subsequent
-background changes or the post-intro transition.
+background changes or the post-intro transition; an extended diagnostic run
+additionally verifies that the animated intro keeps advancing beyond the former
+post-record stall.
 
 `HotelMarioRecomp.exe` itself also enforces the asset contract: a BIOS-only
 launch is rejected, and `--disc` is mandatory for this game-specific build.
