@@ -1,86 +1,86 @@
 # HotelMarioRecomp
 
-Hotel Mario (USA) running as a native CD-i player build on the sibling
-[`cdirecomp`](https://github.com/mstan/cdirecomp) clean-room runtime.
+*Hotel Mario* (USA) running as a native **Philips CD-i** build on the sibling
+[`cdirecomp`](https://github.com/mstan/cdirecomp) static-recompilation engine.
 
-## Status
+> ### ⚠️ Very early development
+> This is a **research preview**. The real CD-RTOS BIOS boots, the player shell
+> opens the disc, the Philips Interactive Media bumper plays with decoded XA
+> audio, and *Hotel Mario* reaches its **title card**. **Gameplay is not yet
+> reachable** — no level is playable and a full playthrough is not certified.
+> Expect rough edges and breaking changes.
 
-Early preview: the real CD-RTOS BIOS boots, the player shell opens the disc,
-the Philips Interactive Media bumper plays with decoded XA audio, and Hotel
-Mario reaches and runs its attract sequence. The Fantasy Factory title card is
-pixel-exact against the regression capture, the Mushroom Kingdom background
-renders correctly, and the verified path has zero native dispatch misses and
-zero dropped audio frames. Later background animation and the transition out of
-the intro now progress without the former CIAP completion stall. Gameplay and
-a full playthrough are not yet certified.
+<p align="center">
+  <img src="docs/hotel-mario-title.png" width="70%" alt="Hotel Mario title card running through HotelMarioRecomp">
+</p>
+<p align="center">
+  <sub><i>Hotel Mario</i> reaching its title card as native recompiled code — booted
+  through the real CD-i system ROM.</sub>
+</p>
 
-This repository contains only game-specific build glue, identity metadata, and
-acceptance tooling. It does **not** contain a CD-i BIOS, Hotel Mario disc data,
-generated game binaries, or emulator/tooling forks.
+## How it works
 
-## Playing
+This repo is thin. It contains only game-specific build glue, identity
+metadata, and acceptance tooling — it builds the `cdirecomp` runtime with a
+Hotel-Mario-specific product identity and asset contract. It **does not**
+contain a CD-i BIOS, any Hotel Mario disc data, generated game code, or any
+emulator/tooling forks. All of the interesting work lives in `cdirecomp`, whose
+philosophy is **low-level, static, native-first**: the whole CD-RTOS system ROM
+is recompiled and executed as native C (no OS-9 HLE), and the game boots on top
+of it exactly as on hardware.
 
-You must supply both:
+## What you must supply
 
-1. A legally dumped 512 KiB CD-i player BIOS (`cdi490a.rom` for the currently
-   verified target).
-2. A legally dumped Hotel Mario (USA) Mode-2 disc image. Use the `.cue` beside
-   its raw `.bin`.
+You provide both, from your own legally dumped media (see [DISC.md](DISC.md) for
+the verified identities):
 
-Build, then launch through the persistent-path helper:
+1. A 512 KiB CD-i player BIOS (`cdi490a.rom`).
+2. A *Hotel Mario* (USA) raw Mode-2 `.cue` + `.bin` image (select the `.cue`).
 
-```powershell
-./tools/build.ps1
-./tools/launch.ps1
-```
+The runtime validates both at startup and never embeds either one in the
+executable.
 
-The first launch asks for both files and saves their paths in ignored
-`bios.cfg` and `disc.cfg` sidecars. Later launches reuse them. The runtime still
-validates both assets at startup and never embeds either one in the executable.
+## Building & running
 
-Player preferences such as captured mouse control and one-shot host RTC sync
-live in the runtime's persistent `player.cfg`.
-
-## Building
-
-Place this repository beside `cdirecomp`, matching the other per-game recomp
-projects:
+Place this repo beside `cdirecomp`:
 
 ```text
 Projects/
-|-- cdirecomp/
-`-- HotelMarioRecomp/
+├── cdirecomp/
+└── HotelMarioRecomp/
 ```
 
-Requirements are CMake, Ninja or another supported generator, a C11 compiler,
-and the SDL2 development package. To use a differently located engine:
+Requirements: CMake, Ninja (or another generator), a C11 compiler, and SDL2.
 
 ```powershell
-cmake -S . -B build -G Ninja -DCDIRECOMP_ROOT=C:/src/cdirecomp
-cmake --build build --config Release -j
+./tools/build.ps1     # builds build/HotelMarioRecomp.exe against ../cdirecomp
+./tools/launch.ps1    # first run asks for the BIOS + disc, then remembers them
 ```
 
-The resulting executable is `build/HotelMarioRecomp.exe` on Windows.
+The first launch saves the chosen paths in git-ignored `bios.cfg` / `disc.cfg`
+sidecars; later launches reuse them.
+
+**Controls:** on Windows the **mouse controls Hotel Mario directly** — it drives
+the CD-i pointer and both buttons through the emulated input path, in-game as
+well as in the shell. Arrows/WASD also move the pointer; Enter/Space/Z is button
+1; Backspace/X is button 2; F11/Alt+Enter toggles fullscreen; Esc exits.
 
 ## Acceptance gate
 
-With your own BIOS and disc image:
+With your own BIOS and disc:
 
 ```powershell
-./tools/accept-attract.ps1 -Bios C:/path/cdi490a.rom `
-  -Disc C:/path/HotelMario.cue
+./tools/accept-attract.ps1 -Bios path/to/cdi490a.rom -Disc path/to/HotelMario.cue
 ```
 
-The gate enters through the real player-shell input path and requires the
-pixel-exact title, a populated background plane in the intro, clean bumper and
-intro XA audio with zero drops, expected disc progress, zero native dispatch
-misses, and real-time field pacing. It does not yet certify subsequent
-background changes or the post-intro transition; an extended diagnostic run
-additionally verifies that the animated intro keeps advancing beyond the former
-post-record stall.
+It enters through the real player-shell input path and checks the pixel-exact
+title, populated intro planes, clean bumper/intro XA audio with zero drops,
+expected disc progress, zero native dispatch misses, and real-time field pacing.
+See [ISSUES.md](ISSUES.md) for the intentionally narrow current certification.
 
-`HotelMarioRecomp.exe` itself also enforces the asset contract: a BIOS-only
-launch is rejected, and `--disc` is mandatory for this game-specific build.
+## License
 
-See [DISC.md](DISC.md) for the verified asset identities and
-[ISSUES.md](ISSUES.md) for the intentionally narrow current certification.
+[PolyForm Noncommercial License 1.0.0](LICENSE) — © 2026 Matthew Stan. Covers
+this repository's build glue and tooling only. It grants no rights to Nintendo,
+Philips, or any other third-party intellectual property; you must supply your
+own legally obtained BIOS and disc image.
