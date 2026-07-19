@@ -61,8 +61,8 @@ The first launch saves the chosen paths in git-ignored `bios.cfg` / `disc.cfg`
 sidecars; later launches reuse them.
 
 **Controls:** on Windows the **mouse controls Hotel Mario directly** — it drives
-the CD-i pointer and both buttons through the emulated input path, in-game as
-well as in the shell. Arrows/WASD also move the pointer; Enter/Space/Z is button
+the CD-i pointer and both buttons through the recompiled runtime's input model,
+in-game as well as in the shell. Arrows/WASD also move the pointer; Enter/Space/Z is button
 1; Backspace/X is button 2; F11/Alt+Enter toggles fullscreen; Esc exits.
 
 ## Acceptance gate
