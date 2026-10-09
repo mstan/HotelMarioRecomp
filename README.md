@@ -6,9 +6,10 @@
 > ### ⚠️ Very early development
 > This is a **research preview**. The real CD-RTOS BIOS boots, the player shell
 > opens the disc, the Philips Interactive Media bumper plays with decoded XA
-> audio, and *Hotel Mario* reaches its **title card and one-player Stage 1**.
-> Intro transitions and repeated death/restart paths now work in recorded
-> probes. Full campaigns and save/restore are not yet certified.
+> audio, and normal-speed input has cleared **Hotel 1 Stages 1–3**, reaching
+> Stage 4. Intro transitions and repeated death/restart paths now work in
+> recorded probes. Full campaigns, bosses, ending and correct save restoration
+> remain unverified.
 > Expect rough edges and breaking changes.
 
 <p align="center">
@@ -18,6 +19,29 @@
   <sub><i>Hotel Mario</i> reaching its title card through the real recompiled BIOS — booted
   through the real CD-i system ROM.</sub>
 </p>
+
+## Recorded progress — 2026-10-09
+
+- **Early gameplay:** the indexed LLE build cleared the first three Hotel 1
+  stages through ordinary input. A separate seeded two-player build reached
+  Stage 3 for Mario and Stage 5 for Luigi. Both full campaigns remain open.
+- **Checks:** six compiler and eleven runtime component checks passed. The
+  latest default build passed 30/30 headless cold boots. The preceding build
+  passed 30/30 windowed boots; both latest windowed batches ended early and
+  remain failed.
+- **Attract and audio:** three complete attract circuits are not certified.
+  The latest DirectSound run ended before its required capture; older long
+  runs lost coverage evidence. Long gameplay also recorded dummy-output PCM
+  drops. Audio listening and sustained performance checks remain open.
+- **Saves:** a named original-game save survived a normal close and cold boot.
+  Restoring the correct active stage still needs validation.
+- **Checkpoint:** implementation and campaign probes are paused. Current work
+  is committed for default-branch integration. The audited local preview
+  archive predates the newest coverage fix and is not a final release.
+
+See [ISSUES.md](ISSUES.md) and the engine's
+[detailed validation ledger](https://github.com/mstan/cdirecomp/blob/master/ISSUES.md)
+for exact build identities, evidence locations and untested behavior.
 
 ## How it works
 
