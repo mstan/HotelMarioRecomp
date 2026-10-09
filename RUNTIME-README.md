@@ -47,3 +47,8 @@ remain in SDL's writable per-user directory, outside the AppImage.
 The owner reports working basic gameplay and the title-screen background.
 Minor visual flickering remains. Both full campaigns, ending, correct save
 restoration, and sustained audio/performance are not yet certified.
+
+The native runtime is licensed under
+[PolyForm Noncommercial 1.0.0](https://github.com/mstan/cdirecomp/blob/master/LICENSE).
+SDL2's notice is included. The AppImage also carries the installed-package
+copyright notices and referenced common license texts for its bundled libraries.

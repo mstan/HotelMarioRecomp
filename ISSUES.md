@@ -53,7 +53,7 @@ establish complete CIAP/IKAT silicon accuracy or broader title compatibility.
 | Attract | Earlier 120000/160000-field runs had no observed guest reset/miss but exhausted coverage; latest DirectSound run lost connection after field 68067 | Three actual nine-demo circuits with successful complete evidence |
 | Audio | Early dummy-output probes had no PCM drops; older long seeded gameplay dropped 318656 PCM frames | Sustained real output, no drops, listening quality and normal-speed performance |
 | Persistence | Named save `AAA` visible after normal close and cold boot with the same 32768-byte battery | Correct active hotel/stage restored through the original chooser |
-| Packaging | Local five-file preview passed allowlist, Release/COSIM OFF graph, PE imports and linked provenance | Archive predates indexed ledger; rebuild/audit the final executable and complete release acceptance |
+| Packaging | Fresh v0.0.2 Windows ZIP and Linux AppImage passed provenance, graph, dependency/payload audits and exact-title package boots; all 17 Linux component tests passed | Full release/playthrough acceptance and broader Linux desktop validation |
 
 Normal-speed gameplay uses ordinary input, including original-game continues;
 the controller reads state and sends buttons, never writes progress or patches
@@ -107,3 +107,12 @@ resume cautions. Central Beads owners are `beads-6v0p`, `beads-bcha`,
 `beads-z8yh` and `beads-mq6t`; the checkpoint integration is `beads-ttbl.1`.
 The campaign/validation issues stay open. Gameplay work requires explicit
 authorization to resume; no probe is currently running.
+
+## Fresh Windows/Linux builds: v0.0.2
+
+The owner requested these packages after the stopped gameplay checkpoint.
+Both include the default 174 native modules and indexed coverage ledger, with
+the same pinned core and runtime semantics. Package checks are complete;
+full-campaign and flicker work has not resumed. See [BUILD-0.0.2.md](BUILD-0.0.2.md)
+for exact package and executable hashes, source inputs, test scope and evidence.
+Build ownership is `beads-ssy9.2`; shared Linux packaging is `beads-ttbl.2`.

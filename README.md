@@ -38,9 +38,12 @@
   drops. Audio listening and sustained performance checks remain open.
 - **Saves:** a named original-game save survived a normal close and cold boot.
   Restoring the correct active stage still needs validation.
-- **Checkpoint:** implementation and campaign probes are paused. Current work
-  is committed on `master`. The audited local preview
-  archive predates the newest coverage fix and is not a final release.
+- **Fresh builds:** v0.0.2 Windows x64 ZIP and Linux x86_64 AppImage include the
+  indexed coverage fix. Both passed packaging audits and short normal-speed
+  boots to the exact title screen; all 17 Linux component tests passed.
+  See [build notes](BUILD-0.0.2.md) for artifacts, identities and validation limits.
+- **Checkpoint:** implementation and campaign probes are paused. Full
+  playthrough certification remains open; these packages are development previews.
 
 See [ISSUES.md](ISSUES.md) and the engine's
 [detailed validation ledger](https://github.com/mstan/cdirecomp/blob/master/ISSUES.md)
