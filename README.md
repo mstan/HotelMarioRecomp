@@ -25,6 +25,9 @@
 - **Early gameplay:** the indexed LLE build cleared the first three Hotel 1
   stages through ordinary input. A separate seeded two-player build reached
   Stage 3 for Mario and Stage 5 for Luigi. Both full campaigns remain open.
+- **Owner playtest:** basic gameplay and the title-screen background are
+  reported working well. Minor visual flickering remains, tracked as
+  `beads-ssy9.1`; its cause has not been investigated.
 - **Checks:** six compiler and eleven runtime component checks passed. The
   latest default build passed 30/30 headless cold boots. The preceding build
   passed 30/30 windowed boots; both latest windowed batches ended early and
@@ -36,7 +39,7 @@
 - **Saves:** a named original-game save survived a normal close and cold boot.
   Restoring the correct active stage still needs validation.
 - **Checkpoint:** implementation and campaign probes are paused. Current work
-  is committed for default-branch integration. The audited local preview
+  is committed on `master`. The audited local preview
   archive predates the newest coverage fix and is not a final release.
 
 See [ISSUES.md](ISSUES.md) and the engine's

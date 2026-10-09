@@ -5,6 +5,21 @@ then authorized documentation, README updates and default-branch integration.
 All game probes are stopped. This remains an early LLE research preview;
 there is no end-to-end playthrough claim and no HLE was added.
 
+## Owner playtest and session closeout
+
+On 2026-10-09 the owner reported that basic gameplay works well and the
+title-screen background now works. Minor visual flickering was also reported;
+it is tracked as open bug `beads-ssy9.1`. No exact scene, frequency, layer,
+impact or root cause has been established. No flicker investigation or fix
+was attempted during closeout.
+
+This feedback comes from the indexed LLE build launched manually at normal
+speed with DirectSound and the original BIOS/USA CUE. Launch metadata and logs
+are retained in ignored `build/playable-lle/manual-play-20261009-095749/`.
+The player's manual session is left under the owner's control. No automated
+controller or campaign probe was resumed. Full-playthrough validation remains
+open; this update records early gameplay feedback rather than a completed game.
+
 ## What is implemented
 
 The LLE product statically compiles 174 distinct executable module identities
