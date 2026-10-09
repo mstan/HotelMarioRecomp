@@ -18,10 +18,15 @@ and game over. Exact complete attract cycles, every level/boss, both player
 campaigns, the ending, save/restore and continue remain unverified.
 No full-playthrough claim is made.
 
-The current default LLE build passed all 30 headless + 30 windowed normal-speed
+The preceding default LLE build passed all 30 headless + 30 windowed normal-speed
 cold boots to the exact title, with linked-input provenance and native binding
-evidence. The current seeded build also legitimately cleared one-player
-Hotel 1 Stage 1 and loaded Stage 2; full campaigns remain open. Audio listening
+evidence. A sustained attract run exposed the coverage ledger's 16384-entry
+limit; the pinned engine now uses an indexed 262144-entry ledger and retains
+other failure captures. New final-build launch and attract gates are running.
+The seeded build legitimately cleared one-player Hotel 1 Stages 1 through 3.
+Both players have cleared the first two stages in a two-player input run. An
+original-game save is visible after a cold restart, but selecting/restoring
+the correct stage still needs validation. Full campaigns remain open. Audio listening
 checks are still pending. A local preview archive passed the
 runtime-only five-file allowlist, build-graph, PE import and provenance audits;
 it is not a certified end-to-end release.
