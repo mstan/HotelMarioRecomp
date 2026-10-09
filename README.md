@@ -6,15 +6,16 @@
 > ### ⚠️ Very early development
 > This is a **research preview**. The real CD-RTOS BIOS boots, the player shell
 > opens the disc, the Philips Interactive Media bumper plays with decoded XA
-> audio, and *Hotel Mario* reaches its **title card**. **Gameplay is not yet
-> reachable** — no level is playable and a full playthrough is not certified.
+> audio, and *Hotel Mario* reaches its **title card and one-player Stage 1**.
+> Intro transitions and repeated death/restart paths now work in recorded
+> probes. Full campaigns and save/restore are not yet certified.
 > Expect rough edges and breaking changes.
 
 <p align="center">
   <img src="docs/hotel-mario-title.png" width="70%" alt="Hotel Mario title card running through HotelMarioRecomp">
 </p>
 <p align="center">
-  <sub><i>Hotel Mario</i> reaching its title card as native recompiled code — booted
+  <sub><i>Hotel Mario</i> reaching its title card through the real recompiled BIOS — booted
   through the real CD-i system ROM.</sub>
 </p>
 
@@ -37,8 +38,10 @@ the verified identities):
 1. A 512 KiB CD-i player BIOS (`cdi490a.rom`).
 2. A *Hotel Mario* (USA) raw Mode-2 `.cue` + `.bin` image (select the `.cue`).
 
-The runtime validates both at startup and never embeds either one in the
-executable.
+The runtime validates the exact generated BIOS identity and disc format at
+startup. Loaded native modules must match their complete image SHA-256;
+the entire disc's identity is recorded by acceptance tooling. Neither asset
+is embedded in the executable.
 
 ## Building & running
 
@@ -53,12 +56,19 @@ Projects/
 Requirements: CMake, Ninja (or another generator), a C11 compiler, and SDL2.
 
 ```powershell
-./tools/build.ps1     # builds build/HotelMarioRecomp.exe against ../cdirecomp
+./tools/build.ps1 -Disc "path/to/Hotel Mario (USA).cue"
 ./tools/launch.ps1    # first run asks for the BIOS + disc, then remembers them
 ```
 
 The first launch saves the chosen paths in git-ignored `bios.cfg` / `disc.cfg`
 sidecars; later launches reuse them.
+
+Generate the BIOS in the sibling engine first, using its documented
+`CdiRecompBios` workflow. `build.ps1 -Disc` generates all distinct executable
+OS-9 modules before building the product. Generated code remains local.
+`-ModuleSeeds` optionally adds image-bound callbacks observed during real
+execution and exported by the engine's `collect_module_seeds.py`; this is
+offline static recompilation. No HLE replacement is enabled.
 
 **Controls:** on Windows the **mouse controls Hotel Mario directly** — it drives
 the CD-i pointer and both buttons through the recompiled runtime's input model,

@@ -12,6 +12,14 @@ endif()
 
 set(CDI_COSIM_BUILD OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(CDI_GAME_GENERATED_DIR "${CDIRECOMP_ROOT}/hotelmario/generated" CACHE PATH
+    "Native modules generated from your Hotel Mario disc")
+if(NOT EXISTS "${CDI_GAME_GENERATED_DIR}/module_manifest.c")
+    message(FATAL_ERROR "Generate Hotel Mario native modules first: tools/build.ps1 -Disc <your.cue>")
+endif()
+if(NOT EXISTS "${CDIRECOMP_ROOT}/bios/generated/bios_identity.h")
+    message(FATAL_ERROR "Regenerate the BIOS with the current CdiRecompBios to bind its byte identity")
+endif()
 add_subdirectory("${CDIRECOMP_ROOT}/runner"
                  "${CMAKE_BINARY_DIR}/cdirecomp-runtime")
 
