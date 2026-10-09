@@ -18,8 +18,11 @@ and game over. Exact complete attract cycles, every level/boss, both player
 campaigns, the ending, save/restore and continue remain unverified.
 No full-playthrough claim is made.
 
-The complete stable-build 30 headless + 30 windowed normal-speed launch gate,
-audio listening checks are still pending. A local preview archive passed the
+The current default LLE build passed all 30 headless + 30 windowed normal-speed
+cold boots to the exact title, with linked-input provenance and native binding
+evidence. The current seeded build also legitimately cleared one-player
+Hotel 1 Stage 1 and loaded Stage 2; full campaigns remain open. Audio listening
+checks are still pending. A local preview archive passed the
 runtime-only five-file allowlist, build-graph, PE import and provenance audits;
 it is not a certified end-to-end release.
 The current identity remains the USA CUE/BIN and `cdi490a.rom` in DISC.md.
