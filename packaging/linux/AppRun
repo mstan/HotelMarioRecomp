@@ -1,0 +1,29 @@
+#!/bin/sh
+set -eu
+appdir=${APPDIR:-$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)}
+runtime=$appdir/usr/bin/HotelMarioRecomp
+if [ ! -x "$runtime" ]; then
+    printf '%s\n' 'HotelMarioRecomp: AppImage runtime is missing.' >&2
+    exit 1
+fi
+export LD_LIBRARY_PATH="$appdir/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export SDL_JOYSTICK_HIDAPI_STEAM=1
+export SDL_GAMECONTROLLER_ALLOW_STEAM_VIRTUAL_GAMEPAD=1
+if [ "$#" -eq 0 ]; then
+    # Assets beside the AppImage remain outside its immutable payload.
+    assets=$(dirname -- "${APPIMAGE:-$0}")
+    if [ -f "$assets/cdi490a.rom" ] && [ -f "$assets/Hotel Mario (USA).cue" ]; then
+        exec "$runtime" "$assets/cdi490a.rom" --disc "$assets/Hotel Mario (USA).cue"
+    fi
+    if command -v zenity >/dev/null 2>&1; then
+        bios=$(zenity --file-selection --title='Select your cdi490a.rom BIOS' \
+            --file-filter='CD-i BIOS | *.rom *.bin') || exit 0
+        disc=$(zenity --file-selection --title='Select your Hotel Mario (USA) CUE' \
+            --file-filter='CD-i disc | *.cue *.bin') || exit 0
+        exec "$runtime" "$bios" --disc "$disc"
+    fi
+    printf '%s\n' 'Launch with: ./HotelMarioRecomp.AppImage /path/to/cdi490a.rom --disc "/path/to/Hotel Mario (USA).cue"' >&2
+    exit 2
+fi
+# Preserve caller-relative asset paths; SDL stores preferences outside AppDir.
+exec "$runtime" "$@"

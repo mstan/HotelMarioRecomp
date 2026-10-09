@@ -2,6 +2,9 @@
 /build-*/
 /release-stage/
 *.zip
+/dist/
+*.AppImage
+*.AppImage.sha256
 
 # User-provided copyrighted assets.
 *.rom
@@ -30,4 +33,3 @@ __pycache__/
 .vs/
 .vscode/
 *.user
-

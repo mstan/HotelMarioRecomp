@@ -5,7 +5,8 @@ param(
     [string]$Disc = "",
     [string]$GeneratedModules = "",
     [string]$Cmake = "",
-    [string]$ModuleSeeds = ""
+    [string]$ModuleSeeds = "",
+    [ValidateRange(1, 64)][int]$Jobs = 4
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,7 +31,7 @@ if ($Disc) {
     $toolBuild = Join-Path $Engine "build/recompiler"
     & $cmakeCommand -S (Join-Path $Engine "recompiler") -B $toolBuild -G $Generator -DCMAKE_BUILD_TYPE=Release
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $cmakeCommand --build $toolBuild --config Release --target CdiRecomp -j 4
+    & $cmakeCommand --build $toolBuild --config Release --target CdiRecomp --parallel $Jobs
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     $recompiler = Join-Path $toolBuild "CdiRecomp.exe"
     if (-not (Test-Path -LiteralPath $recompiler)) { $recompiler = Join-Path $toolBuild "Release/CdiRecomp.exe" }
@@ -46,7 +47,7 @@ try {
         -DCMAKE_BUILD_TYPE=Release `
         "-DCDIRECOMP_ROOT=$Engine" "-DCDI_GAME_GENERATED_DIR=$GeneratedModules"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $cmakeCommand --build $BuildDir --config Release -j
+    & $cmakeCommand --build $BuildDir --config Release --parallel $Jobs
     exit $LASTEXITCODE
 }
 finally {

@@ -97,6 +97,22 @@ OS-9 modules before building the product. Generated code remains local.
 execution and exported by the engine's `collect_module_seeds.py`; this is
 offline static recompilation. No HLE replacement is enabled.
 
+Linux uses the same generated BIOS/modules and LLE runtime. After generating
+the sources with the matching BIOS and USA disc, build and package on an
+x86_64 Linux host with CMake, Ninja, a C11 compiler and SDL2 development files:
+
+```sh
+BUILD_JOBS=4 sh tools/build-linux.sh
+VERSION=0.0.2 sh tools/package_appimage.sh
+```
+
+The package scripts follow the TombaRecomp Windows ZIP/Linux AppImage workflow.
+The experimental Linux baseline is Ubuntu 24.04; its AppImage contains the
+runtime and SDL2 dependencies, while assets and writable player state remain
+outside. See [RUNTIME-README.md](RUNTIME-README.md) for launch instructions.
+Both package formats are development previews and retain the playthrough
+limitations above. Packaging tasks are `beads-ssy9.2` and `beads-ttbl.2`.
+
 **Controls:** on Windows the **mouse controls Hotel Mario directly** — it drives
 the CD-i pointer and both buttons through the recompiled runtime's input model,
 in-game as well as in the shell. Arrows/WASD also move the pointer; Enter/Space/Z is button
