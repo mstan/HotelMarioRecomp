@@ -12,6 +12,7 @@ endif()
 
 set(CDI_COSIM_BUILD OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(CDI_VIDEO_BACKEND "HLE" CACHE STRING "Qualified scanout job: HLE or reference LLE")
 set(CDI_GAME_GENERATED_DIR "${CDIRECOMP_ROOT}/hotelmario/generated" CACHE PATH
     "Native modules generated from your Hotel Mario disc")
 if(NOT EXISTS "${CDI_GAME_GENERATED_DIR}/module_manifest.c")

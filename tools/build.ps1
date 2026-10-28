@@ -6,6 +6,8 @@ param(
     [string]$GeneratedModules = "",
     [string]$Cmake = "",
     [string]$ModuleSeeds = "",
+    [switch]$StaticModuleEntries,
+    [ValidateSet("LLE", "HLE")][string]$VideoBackend = "HLE",
     [ValidateRange(1, 64)][int]$Jobs = 4
 )
 
@@ -25,6 +27,12 @@ if (-not $cmakeCommand -and (Test-Path -LiteralPath $windowsCmake)) {
 }
 if (-not $cmakeCommand) { $cmakeCommand = (Get-Command cmake -ErrorAction Stop).Source }
 $Engine = (Get-Item -LiteralPath $Engine).FullName
+if ($StaticModuleEntries -and $ModuleSeeds) {
+    throw "Choose -StaticModuleEntries or -ModuleSeeds."
+}
+if (-not $StaticModuleEntries -and -not $ModuleSeeds) {
+    $ModuleSeeds = Join-Path $Engine "hotelmario/module-seeds.txt"
+}
 if (-not $GeneratedModules) { $GeneratedModules = Join-Path $Engine "hotelmario/generated" }
 if ($Disc) {
     $Disc = (Get-Item -LiteralPath $Disc).FullName
@@ -45,7 +53,8 @@ Push-Location $root
 try {
     & $cmakeCommand -S . -B $BuildDir -G $Generator `
         -DCMAKE_BUILD_TYPE=Release `
-        "-DCDIRECOMP_ROOT=$Engine" "-DCDI_GAME_GENERATED_DIR=$GeneratedModules"
+        "-DCDIRECOMP_ROOT=$Engine" "-DCDI_GAME_GENERATED_DIR=$GeneratedModules" `
+        "-DCDI_VIDEO_BACKEND=$VideoBackend"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $cmakeCommand --build $BuildDir --config Release --parallel $Jobs
     exit $LASTEXITCODE
