@@ -8,6 +8,7 @@ param(
     [string]$ModuleSeeds = "",
     [switch]$StaticModuleEntries,
     [ValidateSet("LLE", "HLE")][string]$VideoBackend = "HLE",
+    [ValidateSet("LLE", "HLE")][string]$LoaderBackend = "HLE",
     [ValidateRange(1, 64)][int]$Jobs = 4
 )
 
@@ -54,7 +55,7 @@ try {
     & $cmakeCommand -S . -B $BuildDir -G $Generator `
         -DCMAKE_BUILD_TYPE=Release `
         "-DCDIRECOMP_ROOT=$Engine" "-DCDI_GAME_GENERATED_DIR=$GeneratedModules" `
-        "-DCDI_VIDEO_BACKEND=$VideoBackend"
+        "-DCDI_VIDEO_BACKEND=$VideoBackend" "-DCDI_LOADER_BACKEND=$LoaderBackend"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $cmakeCommand --build $BuildDir --config Release --parallel $Jobs
     exit $LASTEXITCODE

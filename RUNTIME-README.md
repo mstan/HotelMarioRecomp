@@ -26,8 +26,9 @@ in `player.cfg` and releases when the window loses focus. Keep `nvram.bin` to
 retain the player's saved data. Game-level save/restore is not yet certified.
 
 The Windows ZIP contains the executable, SDL2, a configuration example, this
-README, and third-party notices. Supply assets separately. The native build
-uses no OS-9 HLE replacements.
+README, and third-party notices. Supply assets separately. Native module
+verification preserves the real kernel's loading, linking, scheduling and
+error behavior. Faithful verification and scanout remain build-time choices.
 
 For Linux, make the AppImage executable and pass your own assets:
 

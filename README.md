@@ -58,7 +58,9 @@ contain a CD-i BIOS, any Hotel Mario disc data, generated game code, or any
 emulator/tooling forks. The implementation lives in `cdirecomp`. The whole
 CD-RTOS system ROM is recompiled and executed as native C. The game uses
 coarse native module bodies and a qualified native frame job; faithful scanout
-remains selectable at build time. Guest kernel and device state stay authoritative.
+remains selectable at build time. Native module-verification spans fold the
+firmware checksum while preserving interrupt and scheduling boundaries. Guest
+kernel and device state stay authoritative.
 
 ## What you must supply
 
@@ -100,7 +102,10 @@ The default regeneration includes the engine's tracked, full-image-SHA-bound
 observed entry catalog. `-ModuleSeeds` selects a different observed catalog;
 `-StaticModuleEntries` uses only statically discovered entries. These remain
 offline static recompilation. `-VideoBackend LLE` selects faithful scanout;
-the default is HLE. The shared engine's own default remains LLE.
+the default is HLE. `-LoaderBackend LLE` selects faithful module verification;
+its default is HLE too. OS-9 still owns file I/O, allocation, linking, scheduling
+and errors. Unsupported firmware or memory shapes retain faithful execution.
+The shared engine's own defaults remain LLE.
 
 The optimization campaign compares complete guest RAM/registers, hardware/audio
 state and every completed frame against the reference in a fixed Hotel 1 Stage 1
@@ -108,7 +113,8 @@ workload. This establishes that workload's performance and correctness; the
 full-campaign, audio-listening and save-restoration gaps above remain open.
 
 Linux uses the same generated BIOS/modules and portable native frame job. Set
-`CDI_VIDEO_BACKEND=LLE` for faithful scanout. After generating
+`CDI_VIDEO_BACKEND=LLE` for faithful scanout and `CDI_LOADER_BACKEND=LLE` for
+faithful module verification. After generating
 the sources with the matching BIOS and USA disc, build and package on an
 x86_64 Linux host with CMake, Ninja, a C11 compiler and SDL2 development files:
 
