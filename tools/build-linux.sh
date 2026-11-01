@@ -4,7 +4,10 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 engine=${CDIRECOMP_ROOT:-"$root/../cdirecomp"}
 build=${BUILD_DIR:-"$root/build-linux"}
 modules=${CDI_GAME_GENERATED_DIR:-"$engine/hotelmario/generated"}
+video=${CDI_VIDEO_BACKEND:-HLE}
+loader=${CDI_LOADER_BACKEND:-HLE}
 jobs=${BUILD_JOBS:-4}
 cmake -S "$root" -B "$build" -G Ninja -DCMAKE_BUILD_TYPE=Release \
-    -DCDIRECOMP_ROOT="$engine" -DCDI_GAME_GENERATED_DIR="$modules"
+    -DCDIRECOMP_ROOT="$engine" -DCDI_GAME_GENERATED_DIR="$modules" \
+    -DCDI_VIDEO_BACKEND="$video" -DCDI_LOADER_BACKEND="$loader"
 cmake --build "$build" --target CdiRuntime --parallel "$jobs"
