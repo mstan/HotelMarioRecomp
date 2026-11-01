@@ -20,6 +20,10 @@ Backspace or X is button 2 (open/close a door). Up enters an open door or an
 elevator; down exits. A controller maps D-pad/A/B to those inputs. F11 or
 Alt+Enter toggles fullscreen; Esc exits.
 
+F8 cycles internal density through 1/2/4/8/16/32/64x (1x by default). This
+changes display output only. Compatible OpenGL hardware uses the resident
+raster renderer; other renderers retain native output.
+
 On normal launch, preferences and the player battery live in SDL's per-user
 preference directory; the runtime prints the path. Mouse capture is optional
 in `player.cfg` and releases when the window loses focus. Keep `nvram.bin` to
