@@ -1,9 +1,9 @@
-# HotelMarioRecomp development preview
+# HotelMarioRecomp 0.0.3 Windows preview
 
 The Windows x64 ZIP and experimental Linux x86_64 AppImage run the original
 CD-RTOS BIOS and Hotel Mario through
 the low-level runtime. Full campaigns and save/restore validation are still in
-progress; this archive is a local development preview.
+progress; this archive is a research preview.
 
 Supply your own matching `cdi490a.rom` and Hotel Mario (USA) Mode-2 CUE/BIN.
 Keep the CUE beside its referenced BIN and launch from PowerShell:
@@ -23,6 +23,8 @@ Alt+Enter toggles fullscreen; Esc exits.
 F8 cycles internal density through 1/2/4/8/16/32/64x (1x by default). This
 changes display output only. Compatible OpenGL hardware uses the resident
 raster renderer; other renderers retain native output.
+Required16x was qualified on the owner's RTX3080Ti. Full-speed32x/64x and
+lower-end16x remain unqualified;64x misses native cadence.
 
 On normal launch, preferences and the player battery live in SDL's per-user
 preference directory; the runtime prints the path. Mouse capture is optional
