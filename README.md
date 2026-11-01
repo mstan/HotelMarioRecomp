@@ -103,7 +103,10 @@ observed entry catalog. `-ModuleSeeds` selects a different observed catalog;
 `-StaticModuleEntries` uses only statically discovered entries. These remain
 offline static recompilation. `-VideoBackend LLE` selects faithful scanout;
 the default is HLE. `-LoaderBackend LLE` selects faithful module verification;
-its default is HLE too. OS-9 still owns file I/O, allocation, linking, scheduling
+`-DrawingBackend LLE` selects faithful deferred drawing preparation. Both
+default to HLE. The drawing job uses the authoritative guest queue and executes
+its real drawing callbacks, preserving IRQ, publication and fault boundaries.
+OS-9 still owns file I/O, allocation, linking, scheduling
 and errors. Unsupported firmware or memory shapes retain faithful execution.
 The shared engine's own defaults remain LLE.
 
@@ -113,8 +116,9 @@ workload. This establishes that workload's performance and correctness; the
 full-campaign, audio-listening and save-restoration gaps above remain open.
 
 Linux uses the same generated BIOS/modules and portable native frame job. Set
-`CDI_VIDEO_BACKEND=LLE` for faithful scanout and `CDI_LOADER_BACKEND=LLE` for
-faithful module verification. After generating
+`CDI_VIDEO_BACKEND=LLE` for faithful scanout, `CDI_LOADER_BACKEND=LLE` for
+faithful module verification, and `CDI_DRAWING_BACKEND=LLE` for faithful drawing
+preparation. After generating
 the sources with the matching BIOS and USA disc, build and package on an
 x86_64 Linux host with CMake, Ninja, a C11 compiler and SDL2 development files:
 
