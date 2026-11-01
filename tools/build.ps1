@@ -14,6 +14,7 @@ param(
     [ValidateSet("LLE", "HLE")][string]$ServiceBackend = "HLE",
     [ValidateSet("LLE", "HLE")][string]$StreamingBackend = "HLE",
     [ValidateSet("LLE", "HLE")][string]$BoardBackend = "HLE",
+    [ValidateSet("LLE", "HLE")][string]$GpuBackend = "HLE",
     [ValidateRange(1, 64)][int]$Jobs = 4
 )
 
@@ -63,7 +64,7 @@ try {
         "-DCDI_VIDEO_BACKEND=$VideoBackend" "-DCDI_LOADER_BACKEND=$LoaderBackend" `
         "-DCDI_DRAWING_BACKEND=$DrawingBackend" "-DCDI_MEMORY_BACKEND=$MemoryBackend" `
         "-DCDI_SERVICE_BACKEND=$ServiceBackend" "-DCDI_STREAMING_BACKEND=$StreamingBackend" `
-        "-DCDI_BOARD_BACKEND=$BoardBackend"
+        "-DCDI_BOARD_BACKEND=$BoardBackend" "-DCDI_GPU_BACKEND=$GpuBackend"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $cmakeCommand --build $BuildDir --config Release --parallel $Jobs
     exit $LASTEXITCODE
