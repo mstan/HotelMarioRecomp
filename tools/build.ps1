@@ -12,6 +12,7 @@ param(
     [ValidateSet("LLE", "HLE")][string]$DrawingBackend = "HLE",
     [ValidateSet("LLE", "HLE")][string]$MemoryBackend = "HLE",
     [ValidateSet("LLE", "HLE")][string]$ServiceBackend = "HLE",
+    [ValidateSet("LLE", "HLE")][string]$StreamingBackend = "HLE",
     [ValidateRange(1, 64)][int]$Jobs = 4
 )
 
@@ -60,7 +61,7 @@ try {
         "-DCDIRECOMP_ROOT=$Engine" "-DCDI_GAME_GENERATED_DIR=$GeneratedModules" `
         "-DCDI_VIDEO_BACKEND=$VideoBackend" "-DCDI_LOADER_BACKEND=$LoaderBackend" `
         "-DCDI_DRAWING_BACKEND=$DrawingBackend" "-DCDI_MEMORY_BACKEND=$MemoryBackend" `
-        "-DCDI_SERVICE_BACKEND=$ServiceBackend"
+        "-DCDI_SERVICE_BACKEND=$ServiceBackend" "-DCDI_STREAMING_BACKEND=$StreamingBackend"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     & $cmakeCommand --build $BuildDir --config Release --parallel $Jobs
     exit $LASTEXITCODE
