@@ -18,6 +18,7 @@ set(CDI_DRAWING_BACKEND "HLE" CACHE STRING "Qualified drawing preparation job: H
 set(CDI_MEMORY_BACKEND "HLE" CACHE STRING "Firmware memory operation job: HLE or reference LLE")
 set(CDI_SERVICE_BACKEND "HLE" CACHE STRING "Process service/publication jobs: HLE or reference LLE")
 set(CDI_STREAMING_BACKEND "HLE" CACHE STRING "CIAP streaming jobs: HLE or reference LLE")
+set(CDI_BOARD_BACKEND "HLE" CACHE STRING "Stopped-CPU board progression: HLE or reference LLE")
 set(CDI_GAME_GENERATED_DIR "${CDIRECOMP_ROOT}/hotelmario/generated" CACHE PATH
     "Native modules generated from your Hotel Mario disc")
 if(NOT EXISTS "${CDI_GAME_GENERATED_DIR}/module_manifest.c")
