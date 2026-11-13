@@ -8,7 +8,7 @@ import engine_tools
 import argparse,hashlib,json,os,pathlib,shutil,subprocess,shlex
 from build_provenance import verify
 
-def build_fixture(build,output,test_source=None,wraps=(),wrap_vblank=True):
+def build_fixture(build,output,test_source=None,wraps=(),wrap_vblank=True,includes=()):
     repo=engine_tools.ENGINE
     windows=os.name=='nt'
     cache={}
@@ -35,7 +35,8 @@ def build_fixture(build,output,test_source=None,wraps=(),wrap_vblank=True):
     provenance=verify(runtime)
     test_object=output/('fixture-test'+suffix)
     subprocess.run([str(compiler),'-std=c11','-O2','-I'+str(repo/'runner/include'),
-                    '-I'+str(repo/'common'),'-c',str(test_source or repo/'runner/tests/cdi_drawing_runtime_test.c'),
+                    '-I'+str(repo/'common'),*['-I'+str(path) for path in includes],
+                    '-c',str(test_source or repo/'runner/tests/cdi_drawing_runtime_test.c'),
                     '-o',str(test_object)],check=True)
     lines=(build/'build.ninja').read_text(encoding='utf-8').splitlines()
     start=next(i for i,line in enumerate(lines) if line.startswith('build '+runtime.name+':'))

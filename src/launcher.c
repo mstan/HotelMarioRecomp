@@ -94,7 +94,7 @@ int cdi_launcher_run(const char *initial_bios,const char *initial_disc,
     settings.volume=config->volume;
     settings.skip_launcher=config->skip_launcher;
     settings.player_src[0]=config->input_source;
-    settings.mouse_enabled=config->capture_mouse;
+    settings.mouse_enabled=config->enable_mouse;
     settings.mouse_sensitivity=config->mouse_sensitivity;
     settings.mouse_invert_x=config->mouse_invert_x;
     settings.mouse_invert_y=config->mouse_invert_y;
@@ -119,7 +119,7 @@ int cdi_launcher_run(const char *initial_bios,const char *initial_disc,
     config->skip_launcher=settings.skip_launcher;
     config->input_source=settings.player_src[0];
     config->gamepad_instance=settings.player_gamepad_instance[0];
-    config->capture_mouse=settings.mouse_enabled;
+    config->enable_mouse=settings.mouse_enabled;
     config->mouse_sensitivity=settings.mouse_sensitivity;
     config->mouse_invert_x=settings.mouse_invert_x;
     config->mouse_invert_y=settings.mouse_invert_y;
