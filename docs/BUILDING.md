@@ -25,6 +25,8 @@ ctest --test-dir build/project-checks --output-on-failure
 
 Engine component checks run from `cdirecomp/` without game assets. A built player also registers the engine's component tests. Game-specific TCP scenarios and acceptance tools live under tools/. Use isolated preferences/saves and dummy audio for unattended runs.
 
+`python tools/frontend_input_fixture.py build --sdl-include <SDL2-include-directory> --output <new-fixture-directory>` links the production runtime objects and exercises SDL focus/click routing with dummy video/audio drivers. It checks uncaptured input, original and Fit to screen coordinates, short click edges, stale launcher-window events and explicit mouse disablement without desktop input.
+
 ## Runtime packages
 
 On Windows, `python tools/package.py --build build` creates the current-version ZIP in dist/. On Linux, `python3 tools/package.py --build build-linux` creates an AppImage using the pinned engine packaging tools. Windows also provides tools/package.ps1; Linux provides tools/package_appimage.sh.

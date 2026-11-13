@@ -36,6 +36,10 @@ def main():
             shutil.copyfile(source,licenses/name)
         for source in (ROOT/"LICENSES").glob("*"):
             shutil.copyfile(source,licenses/source.name)
+        for source_root,name in ((ROOT,"HotelMarioRecomp"),(args.engine,"cdirecomp")):
+            shutil.copyfile(source_root/"LICENSE",licenses/(name+".txt"))
+            if (source_root/"PERMISSIONS.md").is_file():
+                shutil.copyfile(source_root/"PERMISSIONS.md",licenses/(name+"-PERMISSIONS.md"))
         script="package_runtime_release.py" if windows else "package_runtime_appimage.py"
         command=[sys.executable,str(args.engine/"tools"/script),
                  "--product","HotelMarioRecomp","--version",args.version,
