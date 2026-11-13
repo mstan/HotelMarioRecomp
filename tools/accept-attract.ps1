@@ -6,11 +6,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
-$engine = Join-Path (Split-Path -Parent $root) "cdirecomp"
+$engine = Join-Path $root "cdirecomp"
 if (-not $Runtime) {
     $Runtime = Join-Path $root "build/HotelMarioRecomp.exe"
 }
-$probe = Join-Path $engine "tools/hotelmario_launch_probe.py"
+$probe = Join-Path $PSScriptRoot "hotelmario_launch_probe.py"
 
 if (-not (Test-Path -LiteralPath $Runtime)) {
     throw "HotelMarioRecomp is not built at $Runtime. Run tools/build.ps1 first."

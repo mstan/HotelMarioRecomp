@@ -1,160 +1,47 @@
 # HotelMarioRecomp
 
-*Hotel Mario* (USA) running as a native **Philips CD-i** build on the sibling
-[`cdirecomp`](https://github.com/mstan/cdirecomp) static-recompilation engine.
+Hotel Mario (USA) as a native CD-i application, built with the pinned [cdirecomp](https://github.com/mstan/cdirecomp) engine and [recomp-ui](https://github.com/mstan/recomp-ui) launcher.
 
-> ### ⚠️ Very early development
-> This is a **research preview**. The real CD-RTOS BIOS boots, the player shell
-> opens the disc, the Philips Interactive Media bumper plays with decoded XA
-> audio, and normal-speed input has cleared **Hotel 1 Stages 1–3**, reaching
-> Stage 4. Intro transitions and repeated death/restart paths now work in
-> recorded probes. Full campaigns, bosses, ending and correct save restoration
-> remain unverified.
-> Expect rough edges and breaking changes.
+This is a research preview. The real recompiled CD-RTOS BIOS boots the game; selected native jobs accelerate qualified work. Complete campaigns, all bosses/endings and correct game-save restoration remain unverified.
 
-<p align="center">
-  <img src="docs/hotel-mario-title.png" width="70%" alt="Hotel Mario title card running through HotelMarioRecomp">
-</p>
-<p align="center">
-  <sub><i>Hotel Mario</i> reaching its title card through the real recompiled BIOS — booted
-  through the real CD-i system ROM.</sub>
-</p>
+## Get started
 
-## Recorded progress — 2026-10-09
-
-- **Early gameplay:** the indexed LLE build cleared the first three Hotel 1
-  stages through ordinary input. A separate seeded two-player build reached
-  Stage 3 for Mario and Stage 5 for Luigi. Both full campaigns remain open.
-- **Owner playtest:** basic gameplay and the title-screen background are
-  reported working well. Minor visual flickering remains, tracked as
-  `beads-ssy9.1`; its cause has not been investigated.
-- **Checks:** six compiler and eleven runtime component checks passed. The
-  latest default build passed 30/30 headless cold boots. The preceding build
-  passed 30/30 windowed boots; both latest windowed batches ended early and
-  remain failed.
-- **Attract and audio:** three complete attract circuits are not certified.
-  The latest DirectSound run ended before its required capture; older long
-  runs lost coverage evidence. Long gameplay also recorded dummy-output PCM
-  drops. Audio listening and sustained performance checks remain open.
-- **Saves:** a named original-game save survived a normal close and cold boot.
-  Restoring the correct active stage still needs validation.
-- **Fresh builds:** v0.0.2 Windows x64 ZIP and Linux x86_64 AppImage include the
-  indexed coverage fix. Both passed packaging audits and short normal-speed
-  boots to the exact title screen; all 17 Linux component tests passed.
-  See [build notes](BUILD-0.0.2.md) for artifacts, identities and validation limits.
-- **Checkpoint:** implementation and campaign probes are paused. Full
-  playthrough certification remains open; these packages are development previews.
-
-See [ISSUES.md](ISSUES.md) and the engine's
-[detailed validation ledger](https://github.com/mstan/cdirecomp/blob/master/ISSUES.md)
-for exact build identities, evidence locations and untested behavior.
-
-## How it works
-
-This repo is thin. It contains only game-specific build glue, identity
-metadata, and acceptance tooling — it builds the `cdirecomp` runtime with a
-Hotel-Mario-specific product identity and asset contract. It **does not**
-contain a CD-i BIOS, any Hotel Mario disc data, generated game code, or any
-emulator/tooling forks. The implementation lives in `cdirecomp`. The whole
-CD-RTOS system ROM is recompiled and executed as native C. The game uses
-coarse native module bodies and a qualified native frame job; faithful scanout
-remains selectable at build time. Native module-verification spans fold the
-firmware checksum while preserving interrupt and scheduling boundaries. Guest
-kernel and device state stay authoritative.
-
-## What you must supply
-
-You provide both, from your own legally dumped media (see [DISC.md](DISC.md) for
-the verified identities):
-
-1. A 512 KiB CD-i player BIOS (`cdi490a.rom`).
-2. A *Hotel Mario* (USA) raw Mode-2 `.cue` + `.bin` image (select the `.cue`).
-
-The runtime validates the exact generated BIOS identity and disc format at
-startup. Loaded native modules must match their complete image SHA-256;
-the entire disc's identity is recorded by acceptance tooling. Neither asset
-is embedded in the executable.
-
-## Building & running
-
-Place this repo beside `cdirecomp`:
-
-```text
-Projects/
-├── cdirecomp/
-└── HotelMarioRecomp/
-```
-
-Requirements: CMake, Ninja (or another generator), a C11 compiler, and SDL2.
-
-```powershell
-./tools/build.ps1 -Disc "path/to/Hotel Mario (USA).cue"
-./tools/launch.ps1    # first run asks for the BIOS + disc, then remembers them
-```
-
-The first launch saves the chosen paths in git-ignored `bios.cfg` / `disc.cfg`
-sidecars; later launches reuse them.
-
-Generate the BIOS in the sibling engine first, using its documented
-`CdiRecompBios` workflow. `build.ps1 -Disc` generates all distinct executable
-OS-9 modules before building the product. Generated code remains local.
-The default regeneration includes the engine's tracked, full-image-SHA-bound
-observed entry catalog. `-ModuleSeeds` selects a different observed catalog;
-`-StaticModuleEntries` uses only statically discovered entries. These remain
-offline static recompilation. `-VideoBackend LLE` selects faithful scanout;
-the default is HLE. `-LoaderBackend LLE` selects faithful module verification;
-`-DrawingBackend LLE` selects faithful deferred drawing preparation. Both
-default to HLE. The drawing job uses the authoritative guest queue and executes
-its real drawing callbacks, preserving IRQ, publication and fault boundaries.
-OS-9 still owns file I/O, allocation, linking, scheduling
-and errors. Unsupported firmware or memory shapes retain faithful execution.
-The shared engine's own defaults remain LLE.
-
-The optimization campaign compares complete guest RAM/registers, hardware/audio
-state and every completed frame against the reference in a fixed Hotel 1 Stage 1
-workload. This establishes that workload's performance and correctness; the
-full-campaign, audio-listening and save-restoration gaps above remain open.
-
-Linux uses the same generated BIOS/modules and portable native frame job. Set
-`CDI_VIDEO_BACKEND=LLE` for faithful scanout, `CDI_LOADER_BACKEND=LLE` for
-faithful module verification, and `CDI_DRAWING_BACKEND=LLE` for faithful drawing
-preparation. After generating
-the sources with the matching BIOS and USA disc, build and package on an
-x86_64 Linux host with CMake, Ninja, a C11 compiler and SDL2 development files:
+Requirements: Git, Python 3.11+, CMake 3.20+, Ninja, a C/C++ toolchain, SDL2 development files and OpenGL. Windows MinGW and Linux are supported build paths.
 
 ```sh
-BUILD_JOBS=4 sh tools/build-linux.sh
-VERSION=0.0.2 sh tools/package_appimage.sh
+git clone --recurse-submodules https://github.com/mstan/HotelMarioRecomp.git
+cd HotelMarioRecomp
+python tools/build.py --bios /path/to/cdi490a.rom --disc "/path/to/Hotel Mario (USA).cue"
 ```
 
-The package scripts follow the TombaRecomp Windows ZIP/Linux AppImage workflow.
-The experimental Linux baseline is Ubuntu 24.04; its AppImage contains the
-runtime and SDL2 dependencies, while assets and writable player state remain
-outside. See [RUNTIME-README.md](RUNTIME-README.md) for launch instructions.
-Both package formats are development previews and retain the playthrough
-limitations above. Packaging tasks are `beads-ssy9.2` and `beads-ttbl.2`.
+On Linux use `python3`. Windows also provides `setup.ps1 -Bios <rom> -Disc <cue>`; Linux provides `sh setup.sh --bios <rom> --disc <cue>`. Setup initializes the pinned submodules and calls the same build driver.
 
-**Controls:** on Windows the **mouse controls Hotel Mario directly** — it drives
-the CD-i pointer and both buttons through the recompiled runtime's input model,
-in-game as well as in the shell. Arrows/WASD also move the pointer; Enter/Space/Z is button
-1; Backspace/X is button 2; F11/Alt+Enter toggles fullscreen; Esc exits.
+The build verifies the supported BIOS/disc identities listed in [DISC.md](DISC.md), builds the pinned compilers, generates the BIOS and game modules, then builds `build/HotelMarioRecomp` (`.exe` on Windows). Existing local `bios.cfg` and `disc.cfg` selections may supply the input paths. No build step opens file dialogs.
 
-## Acceptance gate
+## Play
 
-With your own BIOS and disc:
+Open the built executable, or run `tools/launch.ps1` on Windows. The shared CD-i launcher selects and verifies the BIOS and disc, remembers choices and offers the controls the runtime implements:
 
-```powershell
-./tools/accept-attract.ps1 -Bios path/to/cdi490a.rom -Disc path/to/HotelMario.cue
-```
+- Keyboard, mouse and selected gamepad input, with bindings.
+- Original 4:3 or Fit to screen, window width, fullscreen and filtering.
+- Audio enable/disable and volume.
 
-It enters through the real player-shell input path and checks the pixel-exact
-title, populated intro planes, clean bumper/intro XA audio with zero drops,
-expected disc progress, zero native dispatch misses, and real-time field pacing.
-See [ISSUES.md](ISSUES.md) for the intentionally narrow current certification.
+The CD-i skin uses a dark teal palette, gold focus accents and the game's title artwork. Fit to screen is the fresh-profile default; it scales the original picture rather than expanding the game world. Saved choices remain authoritative.
+
+Play boots the real player shell. Use its **Play CD-I** control to enter the game. Default keys are arrows/WASD, Z/Enter/Space for button 1 and X/Backspace for button 2. F11 or Alt+Enter toggles fullscreen; Esc quits.
+
+Preferences and native NVRAM stay in the existing per-user `cdirecomp/player` location. Preserve `player.cfg` and `nvram.bin` together. A release update must not replace them. See [runtime instructions](RUNTIME-README.md).
+
+## Project layout
+
+- `cdirecomp/`, `recomp-ui/`: exact engine and launcher submodule pins.
+- `game.toml`, `seeds/`: supported image facts and observed module entry points.
+- `src/`, `assets/`: launcher adapter and title branding.
+- `generated/`: ignored BIOS/module outputs owned by this project.
+- `tools/`, `tests/`: build, packaging and game acceptance checks.
+
+No adjacent engine checkout, firmware, disc data or generated guest source is included in Git. See [build details](docs/BUILDING.md) and [validation limits](docs/VALIDATION.md).
 
 ## License
 
-[PolyForm Noncommercial License 1.0.0](LICENSE) — © 2026 Matthew Stan. Covers
-this repository's build glue and tooling only. It grants no rights to Nintendo,
-Philips, or any other third-party intellectual property; you must supply your
-own legally obtained BIOS and disc image.
+[PolyForm Noncommercial 1.0.0](LICENSE), copyright 2026 Matthew Stan. Third-party components retain their licenses; see [notices](THIRD-PARTY-NOTICES.md). Supply your own legally obtained BIOS and disc.

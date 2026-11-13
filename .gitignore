@@ -21,8 +21,8 @@
 /player.cfg
 /nvram.bin
 
-# Shared engine checkout/junctions are external, never vendored here.
-/cdirecomp/
+# Generated code and local generation receipts.
+/generated/
 
 # Diagnostics and editor noise.
 /*.ppm

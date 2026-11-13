@@ -1,0 +1,13 @@
+[game]
+name = "Hotel Mario"
+region = "USA"
+
+[recompiler]
+subr_exports = "named-offset32"
+module_seeds = "seeds/module-entries.txt"
+
+[assets]
+bios_size = 524288
+bios_sha1 = "f71be031a5dfa837de225081b2ddc8dcb74a0552"
+disc_size = 367147200
+disc_sha1 = "3cf6069c8b1268202f37a562fb552cbf829f0a48"

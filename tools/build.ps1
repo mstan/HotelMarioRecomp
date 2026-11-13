@@ -1,74 +1,32 @@
 param(
-    [string]$BuildDir = "build",
-    [string]$Engine = "",
-    [string]$Generator = "Ninja",
-    [string]$Disc = "",
-    [string]$GeneratedModules = "",
-    [string]$Cmake = "",
-    [string]$ModuleSeeds = "",
-    [switch]$StaticModuleEntries,
-    [ValidateSet("LLE", "HLE")][string]$VideoBackend = "HLE",
-    [ValidateSet("LLE", "HLE")][string]$LoaderBackend = "HLE",
-    [ValidateSet("LLE", "HLE")][string]$DrawingBackend = "HLE",
-    [ValidateSet("LLE", "HLE")][string]$MemoryBackend = "HLE",
-    [ValidateSet("LLE", "HLE")][string]$ServiceBackend = "HLE",
-    [ValidateSet("LLE", "HLE")][string]$StreamingBackend = "HLE",
-    [ValidateSet("LLE", "HLE")][string]$BoardBackend = "HLE",
-    [ValidateSet("LLE", "HLE")][string]$GpuBackend = "HLE",
-    [ValidateRange(1, 64)][int]$Jobs = 4
+    [string]$Bios = "", [string]$Disc = "", [string]$BuildDir = "build",
+    [string]$Engine = "", [string]$Generator = "Ninja", [string]$Cmake = "",
+    [string]$GeneratedModules = "", [string]$ModuleSeeds = "",
+    [switch]$StaticModuleEntries, [switch]$Reference, [switch]$Regenerate,
+    [ValidateSet("LLE", "HLE")][string]$VideoBackend = "",
+    [ValidateSet("LLE", "HLE")][string]$LoaderBackend = "",
+    [ValidateSet("LLE", "HLE")][string]$DrawingBackend = "",
+    [ValidateSet("LLE", "HLE")][string]$MemoryBackend = "",
+    [ValidateSet("LLE", "HLE")][string]$ServiceBackend = "",
+    [ValidateSet("LLE", "HLE")][string]$StreamingBackend = "",
+    [ValidateSet("LLE", "HLE")][string]$BoardBackend = "",
+    [ValidateSet("LLE", "HLE")][string]$GpuBackend = "",
+    [ValidateRange(1,64)][int]$Jobs = 2
 )
-
 $ErrorActionPreference = "Stop"
-$root = Split-Path -Parent $PSScriptRoot
-if (-not $Engine) {
-    $Engine = Join-Path (Split-Path -Parent $root) "cdirecomp"
+$arguments = @("-3", (Join-Path $PSScriptRoot "build.py"), "--build-dir", $BuildDir,
+    "--generator", $Generator, "--jobs", $Jobs)
+foreach ($pair in @(@("bios",$Bios),@("disc",$Disc),@("engine",$Engine),@("cmake",$Cmake),
+                    @("module-seeds",$ModuleSeeds),@("video-backend",$VideoBackend),
+                    @("loader-backend",$LoaderBackend),@("drawing-backend",$DrawingBackend),
+                    @("memory-backend",$MemoryBackend),@("service-backend",$ServiceBackend),
+                    @("streaming-backend",$StreamingBackend),@("board-backend",$BoardBackend),@("gpu-backend",$GpuBackend))) {
+    if ($pair[1]) { $arguments += @("--" + $pair[0], $pair[1]) }
 }
-$cmakeCommand = $Cmake
-$mingwCmake = "C:/msys64/mingw64/bin/cmake.exe"
-$windowsCmake = "C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe"
-if (-not $cmakeCommand -and (Test-Path -LiteralPath $mingwCmake)) {
-    $cmakeCommand = $mingwCmake
-}
-if (-not $cmakeCommand -and (Test-Path -LiteralPath $windowsCmake)) {
-    $cmakeCommand = $windowsCmake
-}
-if (-not $cmakeCommand) { $cmakeCommand = (Get-Command cmake -ErrorAction Stop).Source }
-$Engine = (Get-Item -LiteralPath $Engine).FullName
-if ($StaticModuleEntries -and $ModuleSeeds) {
-    throw "Choose -StaticModuleEntries or -ModuleSeeds."
-}
-if (-not $StaticModuleEntries -and -not $ModuleSeeds) {
-    $ModuleSeeds = Join-Path $Engine "hotelmario/module-seeds.txt"
-}
-if (-not $GeneratedModules) { $GeneratedModules = Join-Path $Engine "hotelmario/generated" }
-if ($Disc) {
-    $Disc = (Get-Item -LiteralPath $Disc).FullName
-    $toolBuild = Join-Path $Engine "build/recompiler"
-    & $cmakeCommand -S (Join-Path $Engine "recompiler") -B $toolBuild -G $Generator -DCMAKE_BUILD_TYPE=Release
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $cmakeCommand --build $toolBuild --config Release --target CdiRecomp --parallel $Jobs
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    $recompiler = Join-Path $toolBuild "CdiRecomp.exe"
-    if (-not (Test-Path -LiteralPath $recompiler)) { $recompiler = Join-Path $toolBuild "Release/CdiRecomp.exe" }
-    $emitArguments = @($Disc, "--emit", "--out", $GeneratedModules, "--subr-exports", "named-offset32")
-    if ($ModuleSeeds) { $emitArguments += @("--module-seeds", (Get-Item -LiteralPath $ModuleSeeds).FullName) }
-    & $recompiler @emitArguments
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-}
-
-Push-Location $root
-try {
-    & $cmakeCommand -S . -B $BuildDir -G $Generator `
-        -DCMAKE_BUILD_TYPE=Release `
-        "-DCDIRECOMP_ROOT=$Engine" "-DCDI_GAME_GENERATED_DIR=$GeneratedModules" `
-        "-DCDI_VIDEO_BACKEND=$VideoBackend" "-DCDI_LOADER_BACKEND=$LoaderBackend" `
-        "-DCDI_DRAWING_BACKEND=$DrawingBackend" "-DCDI_MEMORY_BACKEND=$MemoryBackend" `
-        "-DCDI_SERVICE_BACKEND=$ServiceBackend" "-DCDI_STREAMING_BACKEND=$StreamingBackend" `
-        "-DCDI_BOARD_BACKEND=$BoardBackend" "-DCDI_GPU_BACKEND=$GpuBackend"
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & $cmakeCommand --build $BuildDir --config Release --parallel $Jobs
-    exit $LASTEXITCODE
-}
-finally {
-    Pop-Location
-}
+if ($GeneratedModules) { throw "Use build.py --generated-dir <root> for both BIOS and modules." }
+if ($StaticModuleEntries) { $arguments += "--static-module-entries" }
+if ($Reference) { $arguments += "--reference" }
+if ($Regenerate) { $arguments += "--regenerate" }
+Push-Location (Split-Path -Parent $PSScriptRoot)
+try { & py @arguments; $result = $LASTEXITCODE } finally { Pop-Location }
+exit $result

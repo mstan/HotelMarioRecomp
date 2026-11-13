@@ -1,41 +1,58 @@
 cmake_minimum_required(VERSION 3.20)
-project(HotelMarioRecomp C)
-
-set(CDIRECOMP_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../cdirecomp" CACHE PATH
-    "Path to the sibling cdirecomp checkout")
-
-if(NOT EXISTS "${CDIRECOMP_ROOT}/runner/CMakeLists.txt")
-    message(FATAL_ERROR
-        "cdirecomp was not found at ${CDIRECOMP_ROOT}. "
-        "Clone it beside HotelMarioRecomp or set -DCDIRECOMP_ROOT=...")
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" HOTELMARIO_VERSION LIMIT_COUNT 1)
+project(HotelMarioRecomp VERSION ${HOTELMARIO_VERSION} LANGUAGES C)
+include(CTest)
+set(CDIRECOMP_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/cdirecomp" CACHE PATH "Pinned CD-i engine")
+set(CDI_BIOS_GENERATED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/generated/bios" CACHE PATH "Generated system ROM")
+set(CDI_GAME_GENERATED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/generated/modules" CACHE PATH "Generated Hotel Mario modules")
+option(HOTELMARIO_BUILD_PLAYER "Build the player; OFF runs source-only project checks" ON)
+if(BUILD_TESTING)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME project_contract COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_project.py")
 endif()
-
-set(CDI_COSIM_BUILD OFF CACHE BOOL "" FORCE)
-set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
-set(CDI_VIDEO_BACKEND "HLE" CACHE STRING "Qualified scanout job: HLE or reference LLE")
-set(CDI_LOADER_BACKEND "HLE" CACHE STRING "Qualified module verification job: HLE or reference LLE")
-set(CDI_DRAWING_BACKEND "HLE" CACHE STRING "Qualified drawing preparation job: HLE or reference LLE")
-set(CDI_MEMORY_BACKEND "HLE" CACHE STRING "Firmware memory operation job: HLE or reference LLE")
-set(CDI_SERVICE_BACKEND "HLE" CACHE STRING "Process service/publication jobs: HLE or reference LLE")
-set(CDI_STREAMING_BACKEND "HLE" CACHE STRING "CIAP streaming jobs: HLE or reference LLE")
-set(CDI_BOARD_BACKEND "HLE" CACHE STRING "Stopped-CPU board progression: HLE or reference LLE")
-set(CDI_GPU_BACKEND "HLE" CACHE STRING "Owned raster presentation: HLE or reference LLE")
-set(CDI_GAME_GENERATED_DIR "${CDIRECOMP_ROOT}/hotelmario/generated" CACHE PATH
-    "Native modules generated from your Hotel Mario disc")
-if(NOT EXISTS "${CDI_GAME_GENERATED_DIR}/module_manifest.c")
-    message(FATAL_ERROR "Generate Hotel Mario native modules first: tools/build.ps1 -Disc <your.cue>")
+if(NOT HOTELMARIO_BUILD_PLAYER)
+    return()
 endif()
-if(NOT EXISTS "${CDIRECOMP_ROOT}/bios/generated/bios_identity.h")
-    message(FATAL_ERROR "Regenerate the BIOS with the current CdiRecompBios to bind its byte identity")
+if(NOT EXISTS "${CDIRECOMP_ROOT}/cmake/CdiGame.cmake")
+    message(FATAL_ERROR "Initialize the pinned engine: git submodule update --init --recursive")
 endif()
-add_subdirectory("${CDIRECOMP_ROOT}/runner"
-                 "${CMAKE_BINARY_DIR}/cdirecomp-runtime")
+foreach(JOB VIDEO LOADER DRAWING MEMORY SERVICE STREAMING BOARD GPU)
+    set(CDI_${JOB}_BACKEND "HLE" CACHE STRING "Qualified native job or reference LLE")
+endforeach()
+set(CDI_COSIM_BUILD OFF CACHE BOOL "Developer co-simulation instrumentation")
+include("${CDIRECOMP_ROOT}/cmake/CdiGame.cmake")
+cdirecomp_add_game(HotelMarioRecomp NAME "Hotel Mario"
+    BIOS_DIR "${CDI_BIOS_GENERATED_DIR}" MODULE_DIR "${CDI_GAME_GENERATED_DIR}")
+target_compile_definitions(HotelMarioRecomp PRIVATE CDI_PRODUCT_VERSION="${PROJECT_VERSION}")
 
-set_target_properties(CdiRuntime PROPERTIES
-    OUTPUT_NAME "HotelMarioRecomp"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-)
-target_compile_definitions(CdiRuntime PRIVATE
-    CDI_REQUIRE_DISC=1
-    CDI_PRODUCT_NAME=\"HotelMarioRecomp\"
-)
+option(HOTELMARIO_LAUNCHER "Build the shared CD-i launcher" ON)
+if(HOTELMARIO_LAUNCHER)
+    set(RECOMP_UI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/recomp-ui" CACHE PATH "Pinned shared launcher")
+    if(NOT EXISTS "${RECOMP_UI_ROOT}/src/consoles/cdi/cdi_profile.h")
+        message(FATAL_ERROR "Initialize the CD-i launcher: git submodule update --init --recursive")
+    endif()
+    include("${RECOMP_UI_ROOT}/recomp_ui.cmake")
+    recomp_target_launcher_ui(HotelMarioRecomp CONSOLE cdi)
+    if(WIN32)
+        set_target_properties(HotelMarioRecomp PROPERTIES WIN32_EXECUTABLE TRUE)
+    endif()
+    set(HOTELMARIO_ASSET_NAMES "img/hotel-mario-title.png")
+    foreach(ASSET IN LISTS _RUI_COMMON_FONT_ASSETS)
+        get_filename_component(NAME "${ASSET}" NAME)
+        list(APPEND HOTELMARIO_ASSET_NAMES "fonts/${NAME}")
+    endforeach()
+    foreach(ASSET IN LISTS _RUI_COMMON_IMG_ASSETS)
+        get_filename_component(NAME "${ASSET}" NAME)
+        list(APPEND HOTELMARIO_ASSET_NAMES "img/${NAME}")
+    endforeach()
+    string(JOIN "\n" HOTELMARIO_ASSET_MANIFEST ${HOTELMARIO_ASSET_NAMES})
+    file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/launcher-assets.txt"
+        CONTENT "${HOTELMARIO_ASSET_MANIFEST}\n")
+    target_sources(HotelMarioRecomp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/launcher.c")
+    add_custom_command(TARGET HotelMarioRecomp POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets/img/hotel-mario-title.png"
+            "$<TARGET_FILE_DIR:HotelMarioRecomp>/assets/img/hotel-mario-title.png" VERBATIM)
+endif()
+cdirecomp_finalize_player(HotelMarioRecomp)

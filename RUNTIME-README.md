@@ -1,61 +1,15 @@
-# HotelMarioRecomp 0.0.3 Windows preview
+# Hotel Mario - native CD-i research preview
 
-The Windows x64 ZIP and experimental Linux x86_64 AppImage run the original
-CD-RTOS BIOS and Hotel Mario through
-the low-level runtime. Full campaigns and save/restore validation are still in
-progress; this archive is a research preview.
+Open HotelMarioRecomp to enter the shared CD-i launcher. Select your own supported player BIOS and Hotel Mario USA CUE/BIN disc. The launcher verifies them and remembers their paths. Firmware and disc images are not included.
 
-Supply your own matching `cdi490a.rom` and Hotel Mario (USA) Mode-2 CUE/BIN.
-Keep the CUE beside its referenced BIN and launch from PowerShell:
+Choose keyboard, mouse or a connected gamepad and configure bindings. Display settings offer Original 4:3 and Fit to screen, window width, fullscreen and filtering. Audio settings control volume and output enable. Fresh profiles use Fit to screen; existing choices are preserved. Fit scales the original picture and does not expand its field of view.
 
-```powershell
-.\HotelMarioRecomp.exe "C:\your\cdi490a.rom" --disc "C:\your\Hotel Mario (USA).cue"
-```
+Press Play, then use the real CD-i shell's Play CD-I control. Default keys: arrows/WASD, Z/Enter/Space for button 1, X/Backspace for button 2. F11 or Alt+Enter toggles fullscreen; Esc quits. Both original-game player modes share the CD-i controller input.
 
-Choose **Play CD-i** in the player shell. After the intro, select one or two
-players and a new game. Press button 1 at the stage title to begin.
+Preferences and native saves remain in the per-user cdirecomp/player directory printed at startup. Preserve player.cfg and nvram.bin together across updates. Do not replace them with player.cfg.example. CDI_PLAYER_CONFIG_PATH can select a separate profile. Selecting different media does not delete native NVRAM.
 
-Arrows/WASD move the controller. Enter, Space, or Z is button 1 (jump);
-Backspace or X is button 2 (open/close a door). Up enters an open door or an
-elevator; down exits. A controller maps D-pad/A/B to those inputs. F11 or
-Alt+Enter toggles fullscreen; Esc exits.
+For explicit-path launches: HotelMarioRecomp player.rom --disc game.cue --no-launcher. Add --launcher to show settings with those paths prefilled.
 
-F8 cycles internal density through 1/2/4/8/16/32/64x (1x by default). This
-changes display output only. Compatible OpenGL hardware uses the resident
-raster renderer; other renderers retain native output.
-Required16x was qualified on the owner's RTX3080Ti. Full-speed32x/64x and
-lower-end16x remain unqualified;64x misses native cadence.
+This remains development software. Complete campaigns, every boss/ending, correct restored stage and sustained audio/gameplay acceptance are unverified. Keep native save backups.
 
-On normal launch, preferences and the player battery live in SDL's per-user
-preference directory; the runtime prints the path. Mouse capture is optional
-in `player.cfg` and releases when the window loses focus. Keep `nvram.bin` to
-retain the player's saved data. Game-level save/restore is not yet certified.
-
-The Windows ZIP contains the executable, SDL2, a configuration example, this
-README, and third-party notices. Supply assets separately. Native module
-verification preserves the real kernel's loading, linking, scheduling and
-error behavior. Faithful verification and scanout remain build-time choices.
-
-For Linux, make the AppImage executable and pass your own assets:
-
-```sh
-chmod +x HotelMarioRecomp-*-linux-x86_64.AppImage
-./HotelMarioRecomp-*-linux-x86_64.AppImage /path/to/cdi490a.rom --disc "/path/to/Hotel Mario (USA).cue"
-```
-
-Alternatively place `cdi490a.rom` and `Hotel Mario (USA).cue` with its BIN beside
-the AppImage. With no arguments, the launcher uses those filenames or offers
-file selection when the desktop's `zenity` is available. The AppImage bundles
-SDL2 and its redistributable dependencies; it needs a Linux desktop and the
-host's glibc. The build baseline is Ubuntu 24.04. If FUSE is unavailable, use
-`--appimage-extract-and-run` before the BIOS argument. Preferences and NVRAM
-remain in SDL's writable per-user directory, outside the AppImage.
-
-The owner reports working basic gameplay and the title-screen background.
-Minor visual flickering remains. Both full campaigns, ending, correct save
-restoration, and sustained audio/performance are not yet certified.
-
-The native runtime is licensed under
-[PolyForm Noncommercial 1.0.0](https://github.com/mstan/cdirecomp/blob/master/LICENSE).
-SDL2's notice is included. The AppImage also carries the installed-package
-copyright notices and referenced common license texts for its bundled libraries.
+See THIRD-PARTY-NOTICES.md and LICENSES/ for redistributable component notices. No rights to Nintendo or Philips software are granted.
