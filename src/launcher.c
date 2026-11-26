@@ -75,7 +75,7 @@ int cdi_launcher_run(const char *initial_bios,const char *initial_disc,
     static const char *aspects[]={"Original 4:3","Fit to screen"};
     game.name=HOTELMARIO_GAME_NAME;game.region=HOTELMARIO_GAME_REGION;
     game.aspect_labels=aspects;game.num_aspect_labels=2;
-    game.aspect_setting_help="Fit the original CD-i picture to the window. This does not expand the game's field of view.";
+    game.aspect_setting_help="Fit the original 4:3 CD-i picture inside the window. This does not expand the game's field of view.";
     game.has_window_size=1;
     game.config_path=config_path;
     RecompLauncherCModProvider diagnostics={0};
