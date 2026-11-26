@@ -25,8 +25,11 @@ include("${CDIRECOMP_ROOT}/cmake/CdiGame.cmake")
 cdirecomp_add_game(HotelMarioRecomp NAME "Hotel Mario"
     BIOS_DIR "${CDI_BIOS_GENERATED_DIR}" MODULE_DIR "${CDI_GAME_GENERATED_DIR}")
 target_compile_definitions(HotelMarioRecomp PRIVATE CDI_PRODUCT_VERSION="${PROJECT_VERSION}")
+set_source_files_properties("${CDIRECOMP_ROOT}/runner/src/cdi_mod.c"
+    PROPERTIES COMPILE_DEFINITIONS CDI_MOD_GAME_ID="cdi.hotel-mario")
 
 option(HOTELMARIO_LAUNCHER "Build the shared CD-i launcher" ON)
+set(RECOMP_UI_ENABLE_MODS ON CACHE BOOL "Expose gameplay diagnostics on Mods" FORCE)
 if(HOTELMARIO_LAUNCHER)
     set(RECOMP_UI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/recomp-ui" CACHE PATH "Pinned shared launcher")
     if(NOT EXISTS "${RECOMP_UI_ROOT}/src/consoles/cdi/cdi_profile.h")

@@ -67,6 +67,7 @@ def main():
     parser.add_argument("--cmake", default=shutil.which("cmake"))
     parser.add_argument("--generator", default="Ninja")
     parser.add_argument("--jobs", type=int, default=2)
+    parser.add_argument("--targets", nargs="+", default=["HotelMarioRecomp"])
     parser.add_argument("--module-seeds", type=Path)
     parser.add_argument("--static-module-entries", action="store_true")
     parser.add_argument("--reference", action="store_true", help="Build all faithful LLE implementations")
@@ -135,7 +136,7 @@ def main():
         options.append(f"-DCDI_{job.upper()}_BACKEND={backend}")
     run(args.cmake, "-S", ROOT, "-B", build, "-G", args.generator,
         "-DCMAKE_BUILD_TYPE=Release", "-DCDI_COSIM_BUILD=OFF", *options)
-    run(args.cmake, "--build", build, "--config", "Release", "--parallel", args.jobs)
+    run(args.cmake, "--build", build, "--config", "Release", "--target", *args.targets, "--parallel", args.jobs)
     runtime=executable(build, "HotelMarioRecomp")
     for directory in (ROOT,runtime.parent):
         for name,path in (("bios",bios),("disc",disc)):

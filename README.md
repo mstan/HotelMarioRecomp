@@ -25,6 +25,7 @@ Open the built executable, or run `tools/launch.ps1` on Windows. The shared CD-i
 - Keyboard, mouse and selected gamepad input, with bindings.
 - Original 4:3 or Fit to screen, window width, fullscreen and filtering.
 - Audio enable/disable and volume.
+- Gameplay Diagnostics on the Mods page, with input recording enabled by default and a remembered independent on/off choice.
 
 The CD-i skin uses a dark teal palette, gold focus accents and the game's title artwork. Fit to screen is the fresh-profile default; it scales the original picture rather than expanding the game world. Saved choices remain authoritative.
 
