@@ -25,8 +25,7 @@ include("${CDIRECOMP_ROOT}/cmake/CdiGame.cmake")
 cdirecomp_add_game(HotelMarioRecomp NAME "Hotel Mario"
     BIOS_DIR "${CDI_BIOS_GENERATED_DIR}" MODULE_DIR "${CDI_GAME_GENERATED_DIR}")
 target_compile_definitions(HotelMarioRecomp PRIVATE CDI_PRODUCT_VERSION="${PROJECT_VERSION}")
-set_source_files_properties("${CDIRECOMP_ROOT}/runner/src/cdi_mod.c"
-    PROPERTIES COMPILE_DEFINITIONS CDI_MOD_GAME_ID="cdi.hotel-mario")
+target_compile_definitions(HotelMarioRecomp PRIVATE CDI_SESSION_GAME_ID="cdi.hotel-mario")
 
 option(HOTELMARIO_LAUNCHER "Build the shared CD-i launcher" ON)
 set(RECOMP_UI_ENABLE_MODS ON CACHE BOOL "Expose gameplay diagnostics on Mods" FORCE)
@@ -52,7 +51,8 @@ if(HOTELMARIO_LAUNCHER)
     string(JOIN "\n" HOTELMARIO_ASSET_MANIFEST ${HOTELMARIO_ASSET_NAMES})
     file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/launcher-assets.txt"
         CONTENT "${HOTELMARIO_ASSET_MANIFEST}\n")
-    target_sources(HotelMarioRecomp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/launcher.c")
+    target_sources(HotelMarioRecomp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/launcher.c"
+        "${CDIRECOMP_ROOT}/runner/src/cdi_launcher_settings.c")
     add_custom_command(TARGET HotelMarioRecomp POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_SOURCE_DIR}/assets/img/hotel-mario-title.png"
