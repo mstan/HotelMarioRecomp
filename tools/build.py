@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import tomllib
 
@@ -67,6 +68,7 @@ def main():
     parser.add_argument("--cmake", default=shutil.which("cmake"))
     parser.add_argument("--generator", default="Ninja")
     parser.add_argument("--jobs", type=int, default=2)
+    parser.add_argument("--tools-build-dir", type=Path, help="Explicit shared emitter build directory")
     parser.add_argument("--targets", nargs="+", default=["HotelMarioRecomp"])
     parser.add_argument("--module-seeds", type=Path)
     parser.add_argument("--static-module-entries", action="store_true")
@@ -87,11 +89,14 @@ def main():
         if path.stat().st_size != manifest["assets"][f"{name}_size"] or digest(path, "sha1") != manifest["assets"][f"{name}_sha1"]:
             raise ValueError(f"{name} does not match the supported image in DISC.md")
     build, generated = args.build_dir.resolve(), args.generated_dir.resolve()
-    tools = build / "tools"
-    run(args.cmake, "-S", engine / "recompiler", "-B", tools, "-G", args.generator,
-        "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_TESTING=OFF")
-    run(args.cmake, "--build", tools, "--config", "Release", "--target", "CdiRecomp", "CdiRecompBios", "--parallel", args.jobs)
-    compiler, bios_compiler = executable(tools, "CdiRecomp"), executable(tools, "CdiRecompBios")
+    tools = args.tools_build_dir or build / "tools"
+    sys.path.insert(0, str(engine / "tools"))
+    from bios_generation import build_bios_emitter, generate_bios
+    bios_compiler, toolchain = build_bios_emitter(engine, tools, cmake=args.cmake,
+        generator=args.generator, jobs=args.jobs, extra_targets=("CdiRecomp",))
+    generate_bios(engine, bios, bios_compiler, generated / "bios",
+                  toolchain=toolchain, force=args.regenerate)
+    compiler = executable(tools, "CdiRecomp")
     seeds = args.module_seeds or ROOT / manifest["recompiler"]["module_seeds"]
     if args.static_module_entries and args.module_seeds:
         parser.error("Choose --module-seeds or --static-module-entries")
@@ -109,9 +114,8 @@ def main():
         generated.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(prefix="hotel-generation-", dir=generated.parent) as directory:
             staging = Path(directory)
-            for name in ("bios", "modules"):
+            for name in ("modules",):
                 (staging / name).mkdir()
-            run(bios_compiler, bios, "--emit", "--out", staging / "bios", "--seeds", engine / "bios/cdrtos_discovered.txt")
             command = [compiler, disc, "--emit", "--out", staging / "modules",
                        "--subr-exports", manifest["recompiler"]["subr_exports"]]
             if not args.static_module_entries:
@@ -122,7 +126,7 @@ def main():
                 "#pragma once\n#include <stdint.h>\n#define HOTELMARIO_GAME_NAME " + json.dumps(manifest["game"]["name"]) + "\n#define HOTELMARIO_GAME_REGION " + json.dumps(manifest["game"]["region"]) + "\nstatic const uint8_t hotelmario_disc_sha256[32] = {" + identity + "};\n",
                 encoding="utf-8")
             # Preserve unchanged translation-unit timestamps across tool updates.
-            for name in ("bios", "modules"):
+            for name in ("modules",):
                 (generated / name).mkdir(parents=True, exist_ok=True)
                 for source in (staging / name).iterdir():
                     destination = generated / name / source.name

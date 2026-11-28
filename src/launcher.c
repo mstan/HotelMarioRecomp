@@ -1,4 +1,5 @@
 #include "cdi_launcher.h"
+#include "cdi_launcher_settings.h"
 #include "recomp_launcher.h"
 #include "launcher_profile.h"
 #include "cdi_sha256.h"
@@ -9,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "diagnostics_mod.h"
+#include "cdi_launcher_diagnostics.h"
 
 static int verify_bios(const char *path, RecompLauncherCBiosVerify *out) {
     memset(out,0,sizeof *out);
@@ -89,24 +90,7 @@ int cdi_launcher_run(const char *initial_bios,const char *initial_disc,
     game.has_mouse_controls=1;
     SetupContext context={config,config_path};
     game.persist_setup=persist_setup;game.persist_setup_ctx=&context;
-    settings.window_scale=2;
-    settings.window_width=config->window_width;
-    settings.aspect_index=config->fit_to_screen;
-    settings.fullscreen=config->fullscreen;
-    settings.linear_filter=config->linear_filter;
-    settings.enable_audio=config->enable_audio;
-    settings.audio_freq=44100;
-    settings.volume=config->volume;
-    settings.skip_launcher=config->skip_launcher;
-    settings.player_src[0]=config->input_source;
-    settings.mouse_enabled=config->enable_mouse;
-    settings.mouse_sensitivity=config->mouse_sensitivity;
-    settings.mouse_invert_x=config->mouse_invert_x;
-    settings.mouse_invert_y=config->mouse_invert_y;
-    memcpy(settings.mouse_bind,config->mouse_bind,sizeof config->mouse_bind);
-    memcpy(settings.player_key_bind[0],config->key_bind,sizeof config->key_bind);
-    memcpy(settings.player_pad_bind[0],config->pad_bind,sizeof config->pad_bind);
-    snprintf(settings.player_gamepad_guid[0],sizeof settings.player_gamepad_guid[0],"%s",config->gamepad_guid);
+    cdi_launcher_settings_from_config(&settings,config);
     snprintf(settings.bios_path,sizeof settings.bios_path,"%s",initial_bios ? initial_bios : config->bios_path);
     const char *initial=initial_disc ? initial_disc : config->disc_path;
     char *base=SDL_GetBasePath();
@@ -115,24 +99,7 @@ int cdi_launcher_run(const char *initial_bios,const char *initial_disc,
     SDL_free(base);
     recomp_launcher_set_preserve_sdl(1);
     int result=recomp_launcher_run_window(HOTELMARIO_GAME_NAME,&settings,&game,assets,initial,disc,disc_capacity);
-    config->fit_to_screen=settings.aspect_index==1;
-    config->window_width=settings.window_width;
-    config->fullscreen=settings.fullscreen;
-    config->linear_filter=settings.linear_filter;
-    config->enable_audio=settings.enable_audio;
-    config->volume=settings.volume;
-    config->skip_launcher=settings.skip_launcher;
-    config->input_source=settings.player_src[0];
-    config->gamepad_instance=settings.player_gamepad_instance[0];
-    config->enable_mouse=settings.mouse_enabled;
-    config->mouse_sensitivity=settings.mouse_sensitivity;
-    config->mouse_invert_x=settings.mouse_invert_x;
-    config->mouse_invert_y=settings.mouse_invert_y;
-    memcpy(config->mouse_bind,settings.mouse_bind,sizeof config->mouse_bind);
-    memcpy(config->key_bind,settings.player_key_bind[0],sizeof config->key_bind);
-    memcpy(config->pad_bind,settings.player_pad_bind[0],sizeof config->pad_bind);
-    snprintf(config->gamepad_guid,sizeof config->gamepad_guid,"%s",settings.player_gamepad_guid[0]);
-    snprintf(config->bios_path,sizeof config->bios_path,"%s",settings.bios_path);
+    cdi_launcher_settings_to_config(config,&settings);
     if(result==RECOMP_LAUNCHER_RESULT_LAUNCH)snprintf(config->disc_path,sizeof config->disc_path,"%s",disc);
     if(!cdi_player_config_save(config_path,config))return 2;
     if(result==RECOMP_LAUNCHER_RESULT_QUIT)return 1;
