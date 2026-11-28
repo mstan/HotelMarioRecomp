@@ -79,10 +79,8 @@ int cdi_launcher_run(const char *initial_bios,const char *initial_disc,
     game.aspect_setting_help="Fit the original CD-i picture to the window. This does not expand the game's field of view.";
     game.has_window_size=1;
     game.config_path=config_path;
-    RecompLauncherCModProvider diagnostics={0};
-    diagnostics.ctx=config;diagnostics.feature_count=diagnostics_feature_count;
-    diagnostics.feature_get=diagnostics_feature_get;diagnostics.feature_enable=diagnostics_feature_enable;
-    diagnostics.commit=diagnostics_mod_commit;game.mods=&diagnostics;
+    RecompLauncherCModProvider diagnostics;
+    cdi_launcher_diagnostics_init(&diagnostics,config);game.mods=&diagnostics;
     game.disc_verify=verify_disc;game.bios_verify=verify_bios;
     game.rom_patterns=kCdiRomPatterns;game.num_rom_patterns=2;
     game.boxart_path="assets/img/hotel-mario-title.png";
